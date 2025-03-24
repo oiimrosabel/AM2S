@@ -1,0 +1,13 @@
+[login.dev]
+id = ""
+password = ""
+
+[login.account]
+id = ""
+password = ""
+
+[images]
+noBars = false
+screenDims = [640, 480]
+barsSizes = [44, 42]
+padding = 12

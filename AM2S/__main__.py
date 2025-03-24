@@ -1,74 +1,78 @@
-import json
-import sys
+from os import makedirs
 from pathlib import Path
 
+from AM2S.builders.IdentityBuilder import IdentityBuilder
+from AM2S.builders.RomFileBuilder import RomFileBuilder
+from AM2S.services.ArgumentsService import ArgumentService
+from AM2S.services.ConfigLoader import ConfigLoader
+from AM2S.services.DisplayTools import DisplayTools as Dt
 from AM2S.services.GameInfoFormatter import GameInfoFormatter
-from AM2S.services.GameMediaGetter import GameMediaGetter
-from AM2S.services.ScreenscraperInfo import ScreenscraperInfo
-from AM2S.types.Identity import Identity
-from AM2S.types.RomFile import RomFile
+from AM2S.services.GameMediaFetcher import GameMediaGetter
+from AM2S.services.InfoRequester import InfoRequester
 
-if len(sys.argv) < 2:
-    print("Usage: python -m AM2S <rom-folder>")
-    exit(1)
 
-with open(Path(__file__).parent.parent / "__identity.json") as f:
-    data = f.read()
-    obj: dict[str, any] = json.loads(data)
-    identity = Identity(
-        obj.get("devLogin"),
-        obj.get("devPassword"),
-        obj.get("login"),
-        obj.get("password")
-    )
-    f.close()
+def main():
+    configPath = Path(__file__).parent.parent / "config.toml"
+    config = ConfigLoader(configPath)
+    identity = IdentityBuilder(config).build()
 
-getter = ScreenscraperInfo(identity)
+    getter = InfoRequester(identity)
+    args = ArgumentService()
+    args.parse()
 
-roots = []
-noBoxArt = False
-noScreenshots = False
-noText = False
+    roots = args.get("folder", [])
 
-for args in sys.argv[1:]:
-    if args == "--noBoxArt":
-        print("No box art.")
-        noBoxArt = True
-    elif args == "--noScreenshots":
-        print("No screenshots.")
-        noScreenshots = True
-    elif args == "--noText":
-        print("No text.")
-        noText = True
-    else:
-        roots.append(Path(args))
+    for root in roots:
+        if not root.exists():
+            Dt.error(f"The folder '{root}' does not exist.")
+            exit(1)
+        if not root.is_dir():
+            Dt.error(f"{root} is not a folder.")
+            exit(1)
 
-for root in roots:
-    if not (root.exists() and root.is_dir()):
-        print(f"Not a folder : {root}")
-        exit(1)
+        filesToAnalyze = [x for x in root.rglob("*.[!txt][!png]*")]
+        noBoxArt = args.get("noBoxArt", False)
+        noScreenshots = args.get("noScreenshots", False)
+        noText = args.get("noText", False)
 
-    filesToAnalyze = []
+        print("")
+        Dt.info(f"Folder to analyze: {root.name}")
+        Dt.info(f"Number of games to scrape : {len(filesToAnalyze)}")
+        if noBoxArt:
+            Dt.info("The \"box art\" images won't be downloaded.")
+        if noScreenshots:
+            Dt.info("The screenshots won't be downloaded.")
+        if noText:
+            Dt.info("The game descriptions won't be downloaded.")
+        print("")
 
-    for file in root.rglob("*.*"):
-        filesToAnalyze.append(file)
+        for file in filesToAnalyze:
+            try:
+                Dt.task(f"Scraping {file.name}, this might take a while...")
+                rom = RomFileBuilder(file).build()
+                dataFolder = root / rom.console.genericName
+                if not dataFolder.exists():
+                    makedirs(dataFolder)
+                info = getter.getData(rom)
+                textFormatter = GameInfoFormatter(info)
+                imageGetter = GameMediaGetter(dataFolder, info.medias, config)
+                if not noBoxArt:
+                    imageGetter.downloadBoxArt()
+                if not noScreenshots:
+                    imageGetter.downloadScreenshot()
+                if not noText:
+                    textFormatter.saveResult(dataFolder / "text")
+                Dt.success(f"{file.name} has been successfully scraped.")
+            except Exception as e:
+                if args.get("failFast", False):
+                    Dt.error(f"{e}.")
+                    raise e
+                else:
+                    Dt.error(f'{e}. Skipping {file.stem}...')
 
-    print(f"Number of games to scrape : {len(filesToAnalyze)}")
 
-    for file in filesToAnalyze:
-        try:
-            print(f"Scraping {file.name}, this might take a while...")
-            rom = RomFile(file)
-            dataFolder = root / "data"
-            info = getter.getRomInfo(rom)
-            textFormatter = GameInfoFormatter(info)
-            imageGetter = GameMediaGetter(dataFolder, info.medias)
-            if not noBoxArt:
-                imageGetter.downloadBoxArt()
-            if not noScreenshots:
-                imageGetter.downloadScreenshot()
-            if not noText:
-                textFormatter.saveResult(dataFolder / "text")
-        except Exception as e:
-            # raise e
-            print(f'An exception occurred {e}. Skipping {file.stem}...')
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        Dt.success("Ctrl-C caught. Exiting...")
