@@ -1,13 +1,19 @@
 [login.dev]
-id = ""
-password = ""
+id = "" # TO BE FILLED
+password = "" # TO BE FILLED
 
 [login.account]
-id = ""
-password = ""
+id = "" # TO BE FILLED
+password = "" # TO BE FILLED
 
 [images]
 noBars = false
 screenDims = [640, 480]
 barsSizes = [44, 42]
 padding = 12
+
+[scan]
+hintFile = "hint.toml"
+ignoredFormat = [".png", ".txt", ".png", ".sav"]
+language = "en"
+regions = ["eu", "us", "wor", "jp", "ss"]

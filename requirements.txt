@@ -1,8 +1,11 @@
 -i https://pypi.org/simple
+about-time==4.2.1; python_version >= '3.7' and python_version < '4'
+alive-progress==3.2.0; python_version >= '3.9' and python_version < '4'
 certifi==2025.1.31; python_version >= '3.6'
 charset-normalizer==3.4.1; python_version >= '3.7'
 dpath==2.2.0; python_version >= '3.7'
 furl==2.1.4
+grapheme==0.6.0
 idna==3.10; python_version >= '3.6'
 orderedmultidict==1.0.1
 pillow==11.1.0; python_version >= '3.9'
