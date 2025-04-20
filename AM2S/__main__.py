@@ -76,7 +76,7 @@ def main():
                             title=f"{taskPrefix} {rom.name} - Scrapping",
                             bar="bubbles",
                             spinner="twirls",
-                            title_length=48,
+                            title_length=64,
                             stats=False
                     ) as progress:
                         info = getter.getData(rom)

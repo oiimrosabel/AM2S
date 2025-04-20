@@ -119,11 +119,15 @@ class GameMediaGetter:
     @staticmethod
     def __addHeaderAndFooter(background: Image, barSizes: list[int]):
         bgW, bgH = background.size
-        headers = Image.new("RGBA", background.size, (0,) * 4)
-        fillColor = (0, 0, 0, 96)
+        # headers = Image.new("RGBA", background.size, (0,) * 4)
+        headers = ImageDraw(background, "RGBA")
+        fillColor = (0, 0, 0, 0)
 
-        canvas = ImageDraw(headers)
-        canvas.rectangle([0, 0, bgW, barSizes[0]], fill=fillColor)
-        canvas.rectangle([0, bgH - barSizes[1], bgW, bgH], fill=fillColor)
-        background.alpha_composite(headers, (0,) * 2)
+        headers.rectangle([0, 0, bgW, barSizes[0]], fill=fillColor)
+        headers.rectangle([0, bgH - barSizes[1], bgW, bgH], fill=fillColor)
+
+        # canvas = ImageDraw(headers)
+        # canvas.rectangle([0, 0, bgW, barSizes[0]], fill=fillColor)
+        # canvas.rectangle([0, bgH - barSizes[1], bgW, bgH], fill=fillColor)
+        # background.paste(headers, (0,) * 2)
         return background
