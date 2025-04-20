@@ -1,6 +1,6 @@
 [[console]]
 generic = "Doom"
-id = 135
+id = 290
 format = [".doom"]
 width = 224
 hint = "doom"
@@ -81,6 +81,13 @@ generic = "External - Ports"
 id = 138
 format = [".sh"]
 hint = "pm"
+width = 224
+
+[[console]]
+generic = "Sega Saturn"
+id = 22
+format = [".chd"]
+hint = "sega_s"
 width = 224
 
 # More consoles can be added later on, be ready to use hints though

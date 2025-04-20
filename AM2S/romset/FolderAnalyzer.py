@@ -24,9 +24,13 @@ class FolderAnalyzer:
     def __getHint(self, path: Path, suffix: str):
         try:
             hintPath = Nt.getFile(path / self.__hintName)
-        except:
+        except Exception as e:
+            Dt.error(f"An error occured : {e}")
             return None
+        if suffix[0] == ".":
+            suffix = suffix[1:]
         hint = TomlLoader(hintPath).get(suffix)
+
         Dt.info(f"Found hint \"{hint}\" for {suffix}")
         return hint
 
@@ -65,7 +69,8 @@ class FolderAnalyzer:
             if romFormat not in formatToRomset.keys():
                 try:
                     console = self.__getConsoleFromFormat(romFormat, path)
-                except:
+                except Exception as e:
+                    Dt.error(f"An error occured : {e}")
                     continue
                 (boxPath, previewPath, textPath) = self.__createDataFolder(path, console.genericName)
                 newRomSet = RomSet(

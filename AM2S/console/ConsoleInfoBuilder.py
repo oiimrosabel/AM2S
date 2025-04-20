@@ -3,7 +3,7 @@ from AM2S.procedure.ProcedureStore import strToProcedures
 from AM2S.templates.Builder import Builder
 
 
-class ConsoleInfoBuilder(Builder):
+class ConsoleInfoBuilder(Builder[ConsoleInfo]):
     __entry: dict
 
     def __init__(self, entry: dict):
