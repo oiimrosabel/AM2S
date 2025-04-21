@@ -38,24 +38,21 @@ class GameInfoFormatter:
             f.close()
 
     def __getFallbackText(self):
-        t = " " * 4
-        return (
-                "No info is available for this game. "
-                + "Note that this may happen if the ROM is a ROM hack or a homebrew. "
-                + "If you know more about this game, please go on https://screenscraper.fr. "
-                + "Any help is welcome !\n"
-                + "\n"
-                + "Here's some useful info :\n"
-                + f"{t}- File name : {self.__info.rom.path.name}\n"
-                + f"{t}- Console : {self.__info.rom.console.genericName}\n"
-                + f"{t}- File size : {self.__info.rom.size} bytes\n"
-                + "\n"
-                + f"{t}- CRC32 : {self.__info.rom.hash.crc32}\n"
-                + f"{t}- SHA1 : {self.__info.rom.hash.sha1}\n"
-                + f"{t}- MD5 : {self.__info.rom.hash.md5}\n"
-                + "\n"
-                + f"Last update : {strftime("%d/%m/%Y %H:%M", localtime())}"
-        )
+        return "No info is available for this game. " \
+               "Note that this may happen if the ROM is a ROM hack or a homebrew. " \
+               "If you know more about this game, please go on https://screenscraper.fr. " \
+               "Any contribution is greatly appreciated.\n" \
+               "\n" \
+               "Here's some useful info :\n" \
+               f"   - File name : {self.__info.rom.path.name}\n" \
+               f"   - Console : {self.__info.rom.console.genericName}\n" \
+               f"   - File size : {self.__info.rom.size} bytes\n" \
+               "\n" \
+               f"    - CRC32 : {self.__info.rom.hash.crc32}\n" \
+               f"    - SHA1 : {self.__info.rom.hash.sha1}\n" \
+               f"    - MD5 : {self.__info.rom.hash.md5}\n" \
+               "\n" \
+               f"Last update : {strftime("%d/%m/%Y %H:%M", localtime())}"
 
     def __formatFirstLine(self):
         editor = None
