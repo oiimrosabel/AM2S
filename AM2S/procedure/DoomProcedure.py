@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from AM2S.display.DisplayTools import DisplayTools as Dt
-from AM2S.procedure.DoomFileDataBuilder import DoomFileDataBuilder
 from AM2S.procedure.Procedure import Procedure
+from AM2S.procedure.doom.DoomFileDataBuilder import DoomFileDataBuilder
 
 
 class DoomProcedure(Procedure):

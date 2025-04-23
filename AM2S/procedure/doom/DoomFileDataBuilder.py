@@ -3,7 +3,7 @@ from pathlib import Path
 
 from AM2S.errors.RomError import RomError
 from AM2S.misc.NodeTools import NodeTools as Nt
-from AM2S.procedure.DoomFileData import DoomFileData
+from AM2S.procedure.doom.DoomFileData import DoomFileData
 from AM2S.templates.Builder import Builder
 
 
