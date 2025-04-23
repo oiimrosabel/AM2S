@@ -1,0 +1,20 @@
+[project]
+name = "am2s"
+version = "0.0.1"
+description = " Another MuOS Simple Scraper"
+requires-python = ">=3.12"
+dependencies = [
+    "alive-progress>=3.2.0",
+    "dpath>=2.2.0",
+    "furl>=2.1.4",
+    "pillow>=11.2.1",
+    "requests>=2.32.3",
+]
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.34.0",
+]
+
+[tool.poe.tasks]
+scrape = "python -m AM2S"
