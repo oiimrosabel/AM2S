@@ -3,11 +3,11 @@ from shutil import rmtree
 from urllib.request import urlretrieve
 
 from PIL import Image, ImageFilter, ImageEnhance
-from PIL.ImageDraw import ImageDraw
 from furl import furl
 
 from AM2S.errors.ImageError import ImageError
 from AM2S.media.GameMedia import GameMedia
+from AM2S.media.MaskApplier import MaskApplier
 from AM2S.misc.NodeTools import NodeTools as Nt
 from AM2S.misc.TomlLoader import TomlLoader
 
@@ -15,37 +15,41 @@ from AM2S.misc.TomlLoader import TomlLoader
 class GameMediaGetter:
     __medias: GameMedia
     __config: TomlLoader
+    __masker: MaskApplier
 
-    def __init__(self, media: GameMedia, config: TomlLoader):
+    def __init__(self, media: GameMedia, config: TomlLoader, maskPath: Path):
         self.__medias = media
         self.__config = config
+        self.__masker = MaskApplier(maskPath, config)
 
     def downloadBoxArt(self, path: Path):
         path = Nt.getFolder(path)
 
-        screenDims: list[int] = self.__config.get("images/screenDims", [640, 480])
-        barsSizes: list[int] = self.__config.get("images/barsSizes", [43, 42])
-        noBars: bool = self.__config.get("images/noBars", False)
-        padding: int = self.__config.get("images/padding", 12)
+        screenDims: list[int] = self.__config.get("images/dimensions/screenDims", [640, 480])
+        barsSizes: list[int] = self.__config.get("images/dimensions/barsSizes", [43, 42])
+        padding: int = self.__config.get("images/dimensions/padding", 12)
+        withCartridge: bool = self.__config.get("images/filters/withCartridge", False)
 
         resFileName = self.__medias.rom.name + ".png"
         resSavePath = path / resFileName
+        background = Image.new("RGBA", screenDims, (255,) * 4)
 
         tempFolder = Nt.createOrResetFolder(path / "__temp")
-
-        background = Image.new("RGBA", screenDims, (255,) * 4)
-        titleScreenPath = tempFolder / "1.png"
-        cartridgePath = tempFolder / "2.png"
-
+        titleScreenPath = tempFolder / "ttl.png"
         titleScreenImage = self.__retrieveTitleScreenImage(titleScreenPath)
-        cartridgeImage = self.__retrieveCartridgeImage(cartridgePath)
 
         background = self.__resizeToCover(background, titleScreenImage)
-        background = background.filter(ImageFilter.GaussianBlur(16))
-        background = ImageEnhance.Brightness(background).enhance(0.7)
-        background = self.__addCartridgeToImage(background, cartridgeImage, [padding, padding + barsSizes[1]])
-        if not noBars:
-            background = self.__addHeaderAndFooter(background, barsSizes)
+        background = self.__applyFilters(background)
+        background = self.__masker.apply(background)
+
+        if withCartridge:
+            cartridgePath = tempFolder / "crt.png"
+            cartridgeImage = self.__retrieveCartridgeImage(cartridgePath)
+            background = self.__addCartridgeToImage(
+                background,
+                cartridgeImage,
+                [padding, padding + barsSizes[1]]
+            )
 
         background.save(resSavePath)
         rmtree(tempFolder)
@@ -58,6 +62,14 @@ class GameMediaGetter:
             urlretrieve(self.__medias.screenshotUrl.url, savePath)
         except:
             urlretrieve(self.__medias.defaultScreenshotUrl.url, savePath)
+
+    def __applyFilters(self, background: Image) -> Image:
+        brightness: float = self.__config.get("images/filters/brightness", 1.)
+        blurLevel: int = self.__config.get("images/filters/blurLevel", 0)
+
+        background = ImageEnhance.Brightness(background).enhance(brightness)
+        background = background.filter(ImageFilter.GaussianBlur(blurLevel))
+        return background
 
     def __retrieveTitleScreenImage(self, path: Path) -> Image:
         candidates: list[furl] = [
@@ -90,7 +102,7 @@ class GameMediaGetter:
         return image.resize((width, newHeight))
 
     @staticmethod
-    def __resizeToCover(background: Image, image: Image):
+    def __resizeToCover(background: Image, image: Image) -> Image:
         ogW, ogH = image.size
         bgW, bgH = background.size
 
@@ -108,26 +120,10 @@ class GameMediaGetter:
         return background
 
     @staticmethod
-    def __addCartridgeToImage(background: Image, cartridge: Image, padding: list[int]):
+    def __addCartridgeToImage(background: Image, cartridge: Image, padding: list[int]) -> Image:
         ogW, ogH = cartridge.size
         bgW, bgH = background.size
 
         imageOffset = (bgW - padding[0] - ogW, bgH - padding[1] - ogH)
         background.alpha_composite(cartridge, imageOffset)
-        return background
-
-    @staticmethod
-    def __addHeaderAndFooter(background: Image, barSizes: list[int]):
-        bgW, bgH = background.size
-        # headers = Image.new("RGBA", background.size, (0,) * 4)
-        headers = ImageDraw(background, "RGBA")
-        fillColor = (0, 0, 0, 0)
-
-        headers.rectangle([0, 0, bgW, barSizes[0]], fill=fillColor)
-        headers.rectangle([0, bgH - barSizes[1], bgW, bgH], fill=fillColor)
-
-        # canvas = ImageDraw(headers)
-        # canvas.rectangle([0, 0, bgW, barSizes[0]], fill=fillColor)
-        # canvas.rectangle([0, bgH - barSizes[1], bgW, bgH], fill=fillColor)
-        # background.paste(headers, (0,) * 2)
         return background

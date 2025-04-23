@@ -6,11 +6,16 @@ password = "" # TO BE FILLED
 id = "" # TO BE FILLED
 password = "" # TO BE FILLED
 
-[images]
-noBars = false
+[images.dimensions]
 screenDims = [640, 480]
-barsSizes = [44, 42]
+barsSizes = [42, 42]
 padding = 12
+
+[images.filters]
+brightness = 1
+blurLevel = 0
+withCartridge = true
+mask = "Bars"
 
 [scan]
 hintFile = "hint.toml"

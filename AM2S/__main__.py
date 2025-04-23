@@ -22,6 +22,7 @@ def main():
     root = Path(__file__).parent.parent
 
     configPath = root / "config.toml"
+    maskPath = root / "masks"
     config = TomlLoader(configPath)
     getter = InfoRequester(config)
 
@@ -87,7 +88,7 @@ def main():
                         progress()
 
                         progress.title(f"{taskPrefix} {rom.name} - Getting medias")
-                        imageGetter = GameMediaGetter(info.medias, config)
+                        imageGetter = GameMediaGetter(info.medias, config, maskPath)
                         progress()
 
                         progress.title(f"{taskPrefix} {rom.name} - Generating box art")
