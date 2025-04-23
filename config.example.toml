@@ -9,7 +9,7 @@ password = "" # TO BE FILLED
 [images.dimensions]
 screenDims = [640, 480]
 barsSizes = [42, 42]
-padding = 12
+padding = [12, 12]
 
 [images.filters]
 brightness = 1

@@ -27,7 +27,7 @@ class GameMediaGetter:
 
         screenDims: list[int] = self.__config.get("images/dimensions/screenDims", [640, 480])
         barsSizes: list[int] = self.__config.get("images/dimensions/barsSizes", [43, 42])
-        padding: int = self.__config.get("images/dimensions/padding", 12)
+        padding: (int, int) = self.__config.get("images/dimensions/padding", [12, 12])
         withCartridge: bool = self.__config.get("images/filters/withCartridge", False)
 
         resFileName = self.__medias.rom.name + ".png"
@@ -48,7 +48,7 @@ class GameMediaGetter:
             background = self.__addCartridgeToImage(
                 background,
                 cartridgeImage,
-                [padding, padding + barsSizes[1]]
+                [padding[0], padding[1] + barsSizes[1]]
             )
 
         background.save(resSavePath)
