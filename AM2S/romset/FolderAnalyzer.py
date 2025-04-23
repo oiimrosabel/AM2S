@@ -1,7 +1,7 @@
 from pathlib import Path
+from loguru import logger
 
 from AM2S.console.ConsoleDatabase import ConsoleDatabase
-from AM2S.display.DisplayTools import DisplayTools as Dt
 from AM2S.errors.RomError import RomError
 from AM2S.misc.NodeTools import NodeTools as Nt
 from AM2S.misc.TomlLoader import TomlLoader
@@ -27,13 +27,13 @@ class FolderAnalyzer:
 		try:
 			hintPath = Nt.getFile(path / self.__hintName)
 		except Exception as e:
-			Dt.error(f"An error occured : {e}")
+			logger.error(e)
 			return None
 		if suffix[0] == ".":
 			suffix = suffix[1:]
 		hint = TomlLoader(hintPath).get(suffix)
 
-		Dt.info(f'Found hint "{hint}" for {suffix}')
+		logger.info(f'Found hint "{hint}" for {suffix}')
 		return hint
 
 	def __getConsoleFromFormat(self, suffix: str, rootPath: Path):
@@ -74,7 +74,7 @@ class FolderAnalyzer:
 				try:
 					console = self.__getConsoleFromFormat(romFormat, path)
 				except Exception as e:
-					Dt.error(f"An error occured : {e}")
+					logger.error(e)
 					continue
 				(boxPath, previewPath, textPath) = self.__createDataFolder(
 					path, console.genericName

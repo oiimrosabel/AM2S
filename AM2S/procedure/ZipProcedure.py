@@ -1,7 +1,8 @@
 from pathlib import Path
 from zipfile import ZipFile
 
-from AM2S.display.DisplayTools import DisplayTools as Dt
+from loguru import logger
+
 from AM2S.procedure.Procedure import Procedure
 
 
@@ -9,7 +10,7 @@ class ZipProcedure(Procedure):
 	def apply(self, path: Path) -> Path | None:
 		if path.suffix != ".zip":
 			return path
-		Dt.info("ZipProcedure launched")
+		logger.info("ZipProcedure launched")
 
 		with ZipFile(path, "r") as zipFile:
 			fileList = zipFile.namelist()

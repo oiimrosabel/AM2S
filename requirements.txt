@@ -6,6 +6,7 @@ dpath==2.2.0
 furl==2.1.4
 grapheme==0.6.0
 idna==3.10
+loguru==0.7.3
 orderedmultidict==1.0.1
 pastel==0.2.1
 pillow==11.2.1

@@ -2,15 +2,15 @@ import time
 from pathlib import Path
 
 from alive_progress import alive_bar
+from loguru import logger
 
 from AM2S.api.InfoRequester import InfoRequester
 from AM2S.console.ConsoleDatabase import ConsoleDatabase
-from AM2S.display.DisplayTools import DisplayTools as Dt
-from AM2S.display.TerminalColor import colorText as cT, TerminalColor as Tc
 from AM2S.info.GameInfoFormatter import GameInfoFormatter
 from AM2S.media.GameMediaFetcher import GameMediaGetter
 from AM2S.misc.ArgumentsService import ArgumentService
 from AM2S.misc.NodeTools import NodeTools as Nt
+from AM2S.misc.TerminalColor import colorText, TerminalColor as Tc
 from AM2S.misc.TomlLoader import TomlLoader
 from AM2S.romset.FolderAnalyzer import FolderAnalyzer
 
@@ -37,7 +37,7 @@ def main():
 		try:
 			folder = Nt.getFolder(folder)
 		except Exception as e:
-			Dt.error(str(e))
+			logger.critical(e)
 			exit(1)
 
 		romsets = FolderAnalyzer(
@@ -55,23 +55,23 @@ def main():
 
 		for romset in romsets:
 			print("")
-			Dt.info(f"Console: {romset.console.genericName}")
-			Dt.info(f"Folder to analyze: {romset.root}")
-			Dt.info(f"Number of games to scrape : {len(romset.games)}")
+			logger.info(f"Console: {romset.console.genericName}")
+			logger.info(f"Folder to analyze: {romset.root}")
+			logger.info(f"Number of games to scrape : {len(romset.games)}")
 			if noBoxArt:
-				Dt.info('The "box art" images won\'t be downloaded.')
+				logger.info('The "box art" images won\'t be downloaded.')
 			if noScreenshots:
-				Dt.info("The screenshots won't be downloaded.")
+				logger.info("The screenshots won't be downloaded.")
 			if noText:
-				Dt.info("The game descriptions won't be downloaded.")
+				logger.info("The game descriptions won't be downloaded.")
 			if isLenient:
-				Dt.info("Any errors will be ignored.")
+				logger.info("Any errors will be ignored.")
 			print("")
 
 			for rom in romset.games:
 				try:
-					taskPrefix = cT("🛈 TASK", Tc.TASK)
-					successPrefix = cT("✓ SUCCESS", Tc.SUCCESS)
+					taskPrefix = colorText("🛈 TASK", Tc.TASK)
+					successPrefix = colorText("✓ SUCCESS", Tc.SUCCESS)
 					with alive_bar(
 						6,
 						title=f"{taskPrefix} {rom.name} - Scrapping",
@@ -124,18 +124,18 @@ def main():
 						progress.title(f"{successPrefix} {rom.name}")
 				except Exception as e:
 					if isLenient:
-						Dt.warning(f"{e}. Skipping...")
+						logger.warning(f"{e}. Skipping...")
 						errors.append(rom.name)
 					else:
-						Dt.error(f"{e}. Exiting...")
+						logger.critical(f"{e}. Exiting...")
 						exit(1)
 
 			errorCount = len(errors)
-			Dt.success(
+			logger.success(
 				f"{len(romset.games) - errorCount} ROM(s) for {romset.console.genericName} has been scrapped !"
 			)
 			if isLenient and errorCount > 0:
-				Dt.warning(
+				logger.warning(
 					f"{errorCount} error(s) occurred. The following ROMs have not been scrapped:"
 				)
 				for file in errors:
@@ -143,7 +143,7 @@ def main():
 
 	endTime = time.time()
 	print("")
-	Dt.success(
+	logger.success(
 		f"All done ! It took a total of {round(endTime - startTime, 2)} seconds. Enjoy <3"
 	)
 
@@ -152,4 +152,4 @@ if __name__ == "__main__":
 	try:
 		main()
 	except KeyboardInterrupt:
-		Dt.success("Ctrl-C caught. Exiting...")
+		logger.success("Ctrl-C caught. Exiting...")
