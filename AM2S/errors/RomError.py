@@ -1,2 +1,2 @@
 class RomError(Exception):
-    pass
+	pass

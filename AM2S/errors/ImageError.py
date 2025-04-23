@@ -1,2 +1,2 @@
 class ImageError(Exception):
-    pass
+	pass

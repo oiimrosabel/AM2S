@@ -5,5 +5,5 @@ from AM2S.identity.Credentials import Credentials
 
 @dataclass
 class Identity:
-    dev: Credentials
-    account: Credentials
+	dev: Credentials
+	account: Credentials

@@ -1,2 +1,2 @@
 class NodeError(Exception):
-    pass
+	pass

@@ -1,2 +1,2 @@
 class ProcedureError(Exception):
-    pass
+	pass

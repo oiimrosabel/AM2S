@@ -3,6 +3,6 @@ from pathlib import Path
 
 
 class Procedure:
-    @abstractmethod
-    def apply(self, path: Path) -> Path | None:
-        pass
+	@abstractmethod
+	def apply(self, path: Path) -> Path | None:
+		pass

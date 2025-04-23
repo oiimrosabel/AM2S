@@ -18,3 +18,11 @@ dev = [
 
 [tool.poe.tasks]
 scrape = "python -m AM2S"
+
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+docstring-code-format = true

@@ -1,2 +1,2 @@
 class DatabaseError(Exception):
-    pass
+	pass

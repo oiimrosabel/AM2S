@@ -7,8 +7,8 @@ from AM2S.hash.Hashes import Hashes
 
 @dataclass
 class RomFile:
-    name: str
-    path: Path
-    hash: Hashes
-    console: ConsoleInfo
-    size: int
+	name: str
+	path: Path
+	hash: Hashes
+	console: ConsoleInfo
+	size: int

@@ -7,11 +7,11 @@ from AM2S.rom.RomFile import RomFile
 
 @dataclass
 class RomSet:
-    root: Path
+	root: Path
 
-    textPath: Path
-    previewPath: Path
-    boxPath: Path
+	textPath: Path
+	previewPath: Path
+	boxPath: Path
 
-    console: ConsoleInfo
-    games: list[RomFile]
+	console: ConsoleInfo
+	games: list[RomFile]
